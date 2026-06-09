@@ -75,7 +75,28 @@
   .notes { margin-top:26px; font-size:13px; color:var(--muted); border-top:1px solid var(--line); padding-top:14px; white-space:pre-line; }
   .msg { margin-top:12px; font-size:13px; font-weight:600; min-height:18px; }
   .msg.ok { color:#16a34a; } .msg.err { color:#dc2626; }
-  @media(max-width:900px){ .tool{ grid-template-columns:1fr; } }
+  /* ---- Responsive: tablets ---- */
+  @media(max-width:900px){
+    .tool{ grid-template-columns:1fr; }
+    #invoice{ padding:24px; }
+  }
+  /* ---- Responsive: phones ---- */
+  @media(max-width:600px){
+    .frow{ flex-direction:column; gap:0; }
+    #invoice{ padding:18px; font-size:13px; }
+    .inv-head{ flex-direction:column; gap:12px; }
+    .inv-title{ text-align:left; }
+    .inv-title h2{ font-size:26px; }
+    .parties{ flex-direction:column; gap:16px; }
+    .dates{ text-align:left; }
+    .totals{ width:100%; }
+    /* Make the items table horizontally scrollable so nothing is cut */
+    .items-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .items{ min-width:420px; }
+    .preview-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    table.preview{ min-width:420px; }
+    .tool-actions .btn{ flex:1 1 100%; text-align:center; }
+  }
   @media print {
     @page { margin: 12mm; }
     body { background:#fff !important; }
@@ -165,10 +186,12 @@
       </div>
 
       <label class="fld">Items</label>
+      <div class="items-wrap">
       <table class="items">
         <thead><tr><th style="width:50%">Description</th><th>Qty</th><th>Price</th><th></th></tr></thead>
         <tbody id="itemRows"></tbody>
       </table>
+      </div>
       <button class="btn sm sec" type="button" id="addItemBtn">+ Add Item</button>
 
       <div class="frow">
@@ -204,10 +227,12 @@
           <div><h4>Bill To</h4><div id="pTo" class="meta"></div></div>
           <div class="dates" id="pDates"></div>
         </div>
+        <div class="preview-wrap">
         <table class="preview">
           <thead><tr><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th></tr></thead>
           <tbody id="pItems"></tbody>
         </table>
+        </div>
         <div class="totals">
           <div class="line"><span>Subtotal</span><span id="pSub"></span></div>
           <div class="line"><span>Discount</span><span id="pDisc"></span></div>
