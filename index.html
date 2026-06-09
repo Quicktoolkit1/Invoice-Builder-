@@ -48,12 +48,15 @@
   .tool input, .tool textarea, .tool select { width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:8px; font-size:14px; font-family:inherit; }
   .tool input:focus, .tool textarea:focus, .tool select:focus { outline:none; border-color:var(--brand); }
   .frow { display:flex; gap:12px; } .frow>* { flex:1; }
-  .items { width:100%; border-collapse:collapse; margin-top:8px; }
+  .items { width:100%; border-collapse:collapse; margin-top:8px; table-layout:fixed; }
+  .items th:nth-child(1){ width:46%; } .items th:nth-child(2){ width:18%; }
+  .items th:nth-child(3){ width:24%; } .items th:nth-child(4){ width:12%; }
+  .items input{ width:100%; }
   .items th { font-size:11px; color:var(--muted); text-align:left; padding:6px; text-transform:uppercase; }
   .items td { padding:4px; }
   .items input { padding:7px 9px; }
   .del { background:#fee2e2; color:#dc2626; border:none; border-radius:6px; width:30px; height:30px; cursor:pointer; font-weight:700; }
-  .tool-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  .tool-actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:22px; }
   #invoice { background:#fff; border-radius:14px; padding:40px; box-shadow:0 4px 20px rgba(0,0,0,.06); font-size:14px; color:#0f172a; }
   .inv-head { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid var(--brand); padding-bottom:20px; margin-bottom:24px; }
   .inv-head img { max-height:64px; max-width:180px; object-fit:contain; }
@@ -211,14 +214,6 @@
 
       <label class="fld">Notes / Payment Terms</label>
       <textarea id="notes" rows="2" placeholder="Payment due within 15 days. Thank you!"></textarea>
-
-      <div class="tool-actions">
-        <button class="btn" id="pdfBtn" type="button">⬇ Download PDF</button>
-        <button class="btn sec" type="button" id="printBtn">🖨 Print</button>
-        <button class="btn sec" type="button" id="sampleBtn">📋 Load Sample</button>
-        <button class="btn sec" type="button" id="resetBtn">↺ Reset</button>
-      </div>
-      <div id="msg" class="msg" role="status" aria-live="polite"></div>
     </div>
 
     <!-- PREVIEW -->
@@ -249,6 +244,15 @@
       </div>
     </div>
   </div>
+
+  <!-- ===== Actions (below the live preview) ===== -->
+  <div class="tool-actions" id="actions">
+    <button class="btn" id="pdfBtn" type="button">⬇ Download PDF</button>
+    <button class="btn sec" type="button" id="printBtn">🖨 Print</button>
+    <button class="btn sec" type="button" id="sampleBtn">📋 Load Sample</button>
+    <button class="btn sec" type="button" id="resetBtn">↺ Reset</button>
+  </div>
+  <div id="msg" class="msg" role="status" aria-live="polite"></div>
 
   <!-- ===== Features / SEO content ===== -->
   <section style="margin-top:50px">
@@ -452,8 +456,9 @@ function exportPDF(){
   holder.appendChild(clone);
   document.body.appendChild(holder);
 
-  // Higher scale = crisp, non-pixelated output. Cap to keep memory reasonable.
-  const scale = Math.min(Math.max(window.devicePixelRatio || 1, 2), 3);
+  // Higher scale = crisp, non-pixelated output. Target ~300 DPI for A4.
+  // A4 width is 794 CSS px at 96 DPI; scaling ~3.1x gives ~2480 px (≈300 DPI).
+  const scale = Math.min(Math.max(2480 / 794, 2), 4); // ≈ 3.12
 
   html2canvas(clone, {
     scale: scale,
@@ -484,7 +489,7 @@ function exportPDF(){
     const y = margin;
 
     const imgData = canvas.toDataURL('image/png');  // PNG = lossless, no pixel "fat"
-    pdf.addImage(imgData, 'PNG', x, y, imgW, imgH, undefined, 'FAST');
+    pdf.addImage(imgData, 'PNG', x, y, imgW, imgH, undefined, 'NONE');
 
     pdf.save(($('invNo').value || 'invoice') + '.pdf');
     showMsg('Your PDF has been downloaded ✓',true);
