@@ -77,24 +77,30 @@
   .msg.ok { color:#16a34a; } .msg.err { color:#dc2626; }
   /* ---- Responsive: tablets ---- */
   @media(max-width:900px){
-    .tool{ grid-template-columns:1fr; }
+    .tool{ grid-template-columns:1fr; gap:18px; }
     #invoice{ padding:24px; }
   }
   /* ---- Responsive: phones ---- */
   @media(max-width:600px){
     .frow{ flex-direction:column; gap:0; }
-    #invoice{ padding:18px; font-size:13px; }
-    .inv-head{ flex-direction:column; gap:12px; }
+    /* Editable items table stays fluid (no horizontal scroll on the form) */
+    .items th{ padding:4px; font-size:10px; }
+    .items td{ padding:3px; }
+    .items input{ padding:6px 7px; font-size:13px; }
+    .del{ width:26px; height:26px; }
+    /* Invoice preview adapts to small screens */
+    #invoice{ padding:16px; font-size:13px; }
+    .inv-head{ flex-direction:column; gap:10px; align-items:flex-start; }
     .inv-title{ text-align:left; }
-    .inv-title h2{ font-size:26px; }
-    .parties{ flex-direction:column; gap:16px; }
+    .inv-title h2{ font-size:24px; letter-spacing:1px; }
+    .parties{ flex-direction:column; gap:14px; }
     .dates{ text-align:left; }
     .totals{ width:100%; }
-    /* Make the items table horizontally scrollable so nothing is cut */
-    .items-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
-    .items{ min-width:420px; }
+    /* Only the read-only preview table scrolls if it is too wide */
     .preview-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
-    table.preview{ min-width:420px; }
+    table.preview{ min-width:380px; }
+    table.preview th, table.preview td{ padding:8px 6px; font-size:12px; }
+    .tool-actions{ gap:8px; }
     .tool-actions .btn{ flex:1 1 100%; text-align:center; }
   }
   @media print {
@@ -426,42 +432,65 @@ function exportPDF(){
   const { jsPDF } = window.jspdf;
   const node = $('invoice');
 
-  // Capture the whole invoice as a high-resolution image, then scale it to
-  // fit the full A4 page width so NOTHING on the right side gets cut off.
-  html2canvas(node, {
-    scale: 2,
+  // Render an off-screen clone at a fixed A4-proportional width (794px = A4 @96dpi).
+  // This makes the PDF layout consistent and sharp on every device, regardless of
+  // the on-screen preview width.
+  const clone = node.cloneNode(true);
+  clone.style.width = '794px';
+  clone.style.maxWidth = 'none';
+  clone.style.margin = '0';
+  clone.style.padding = '40px';
+  clone.style.boxShadow = 'none';
+  clone.style.borderRadius = '0';
+
+  const holder = document.createElement('div');
+  holder.style.position = 'fixed';
+  holder.style.left = '-10000px';
+  holder.style.top = '0';
+  holder.style.width = '794px';
+  holder.style.background = '#ffffff';
+  holder.appendChild(clone);
+  document.body.appendChild(holder);
+
+  // Higher scale = crisp, non-pixelated output. Cap to keep memory reasonable.
+  const scale = Math.min(Math.max(window.devicePixelRatio || 1, 2), 3);
+
+  html2canvas(clone, {
+    scale: scale,
     useCORS: true,
     backgroundColor: '#ffffff',
     logging: false,
-    windowWidth: node.scrollWidth,
+    windowWidth: 794,
     scrollX: 0,
     scrollY: 0
   }).then(function(canvas){
+    if(holder.parentNode) holder.parentNode.removeChild(holder);
+
     const pdf = new jsPDF({orientation:'p', unit:'mm', format:'a4', compress:true});
     const pageW = pdf.internal.pageSize.getWidth();   // 210 mm
     const pageH = pdf.internal.pageSize.getHeight();  // 297 mm
-    const imgW = pageW;                               // fit full width
-    const imgH = canvas.height * imgW / canvas.width; // proportional height
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const margin = 10;                                // mm
+    const availW = pageW - margin*2;
+    const availH = pageH - margin*2;
 
-    // First page
-    let position = 0;
-    let heightLeft = imgH;
-    pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
-    heightLeft -= pageH;
-
-    // Add extra pages if the invoice is taller than one page
-    while(heightLeft > 0){
-      position -= pageH;
-      pdf.addPage();
-      pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
-      heightLeft -= pageH;
+    // Fit the WHOLE invoice onto a single page so no line is ever cut in half.
+    let imgW = availW;
+    let imgH = canvas.height * imgW / canvas.width;
+    if (imgH > availH){
+      imgH = availH;
+      imgW = canvas.width * imgH / canvas.height;
     }
+    const x = (pageW - imgW) / 2;   // centre horizontally
+    const y = margin;
+
+    const imgData = canvas.toDataURL('image/png');  // PNG = lossless, no pixel "fat"
+    pdf.addImage(imgData, 'PNG', x, y, imgW, imgH, undefined, 'FAST');
 
     pdf.save(($('invNo').value || 'invoice') + '.pdf');
     showMsg('Your PDF has been downloaded ✓',true);
     btn.disabled=false; btn.textContent=old;
   }).catch(function(err){
+    if(holder.parentNode) holder.parentNode.removeChild(holder);
     console.error(err);
     showMsg('PDF error: '+err.message+' — Please use Print → Save as PDF instead.',false);
     btn.disabled=false; btn.textContent=old;

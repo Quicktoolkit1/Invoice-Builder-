@@ -203,3 +203,20 @@ img { max-width: 100%; }
   .nav-links.open { display: flex; }
   .hero h1 { font-size: 30px; }
 }
+
+/* ---------- Responsive: phones ---------- */
+@media (max-width: 600px) {
+  .container { padding: 0 14px; }
+  .page { padding: 24px 0 40px; }
+  .card { padding: 18px; border-radius: 12px; }
+  .hero { padding: 30px 0 18px; }
+  .hero h1 { font-size: 25px; }
+  .hero p { font-size: 15px; }
+  .content h1 { font-size: 24px; }
+  .content h2 { font-size: 19px; }
+  .feature, .post-card { padding: 18px; }
+  .nav { padding: 12px 14px; }
+  .brand { font-size: 16px; }
+  .btn { padding: 11px 18px; font-size: 14px; }
+  .footer-grid { gap: 22px; padding: 0 14px; }
+}
