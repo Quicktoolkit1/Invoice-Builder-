@@ -307,9 +307,8 @@
   <div class="footer-bottom">© <span data-year>2026</span> Invoice Builder by Abdullah. All rights reserved.</div>
 </footer>
 
-<!-- jsPDF + html2canvas for PDF export -->
+<!-- jsPDF for crisp vector PDF export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="assets/site.js"></script>
 <script>
 const $ = id => document.getElementById(id);
@@ -420,86 +419,159 @@ $('logo').addEventListener('change',e=>{
   r.readAsDataURL(f);
 });
 
+// Currency symbol that renders safely in the standard PDF font.
+// The Rupee sign (₹) is not in the standard PDF font set, so we use "Rs.".
+function pdfCur(){ const c=$('currency').value; return c==='₹' ? 'Rs.' : c; }
+function fmtPDF(n){ return pdfCur()+' '+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+// Vector PDF: text and lines are drawn directly into the PDF, so the output is
+// crisp at any zoom level and never pixelates (unlike an image-based export).
 function exportPDF(){
-  if(!window.jspdf || !window.jspdf.jsPDF || typeof html2canvas === 'undefined'){
+  if(!window.jspdf || !window.jspdf.jsPDF){
     showMsg('PDF library failed to load. Please check your internet connection, or use Print → Save as PDF.',false);
     return;
   }
-  if($('itemRows').querySelectorAll('tr').length===0){
-    showMsg('Please add at least one item before downloading.',false);
-    return;
-  }
-  const btn=$('pdfBtn');
-  btn.disabled=true; const old=btn.textContent; btn.textContent='Generating…';
-  showMsg('Preparing your PDF…',true);
+  const rows = [...$('itemRows').querySelectorAll('tr')];
+  if(rows.length===0){ showMsg('Please add at least one item before downloading.',false); return; }
 
-  const { jsPDF } = window.jspdf;
-  const node = $('invoice');
+  const btn=$('pdfBtn'); btn.disabled=true; const old=btn.textContent; btn.textContent='Generating…';
 
-  // Render an off-screen clone at a fixed A4-proportional width (794px = A4 @96dpi).
-  // This makes the PDF layout consistent and sharp on every device, regardless of
-  // the on-screen preview width.
-  const clone = node.cloneNode(true);
-  clone.style.width = '794px';
-  clone.style.maxWidth = 'none';
-  clone.style.margin = '0';
-  clone.style.padding = '40px';
-  clone.style.boxShadow = 'none';
-  clone.style.borderRadius = '0';
+  try{
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({orientation:'p', unit:'mm', format:'a4'});
+    const W=210, H=297, M=15;
+    const brand=[79,70,229], muted=[100,116,139], lineCol=[226,232,240], dark=[15,23,42];
+    const amountX = W - M;        // right edge for right-aligned numbers
+    const priceX  = W - M - 32;
+    const qtyX    = W - M - 62;
+    const descMaxW = qtyX - M - 8;
 
-  const holder = document.createElement('div');
-  holder.style.position = 'fixed';
-  holder.style.left = '-10000px';
-  holder.style.top = '0';
-  holder.style.width = '794px';
-  holder.style.background = '#ffffff';
-  holder.appendChild(clone);
-  document.body.appendChild(holder);
+    let y = M;
 
-  // Higher scale = crisp, non-pixelated output. Target ~300 DPI for A4.
-  // A4 width is 794 CSS px at 96 DPI; scaling ~3.1x gives ~2480 px (≈300 DPI).
-  const scale = Math.min(Math.max(2480 / 794, 2), 4); // ≈ 3.12
-
-  html2canvas(clone, {
-    scale: scale,
-    useCORS: true,
-    backgroundColor: '#ffffff',
-    logging: false,
-    windowWidth: 794,
-    scrollX: 0,
-    scrollY: 0
-  }).then(function(canvas){
-    if(holder.parentNode) holder.parentNode.removeChild(holder);
-
-    const pdf = new jsPDF({orientation:'p', unit:'mm', format:'a4', compress:true});
-    const pageW = pdf.internal.pageSize.getWidth();   // 210 mm
-    const pageH = pdf.internal.pageSize.getHeight();  // 297 mm
-    const margin = 10;                                // mm
-    const availW = pageW - margin*2;
-    const availH = pageH - margin*2;
-
-    // Fit the WHOLE invoice onto a single page so no line is ever cut in half.
-    let imgW = availW;
-    let imgH = canvas.height * imgW / canvas.width;
-    if (imgH > availH){
-      imgH = availH;
-      imgW = canvas.width * imgH / canvas.height;
+    // ---------- Header ----------
+    let leftBottom = y;
+    if(logoData){
+      try{
+        const props = doc.getImageProperties(logoData);
+        const type = (logoData.substring(11, logoData.indexOf(';'))||'png').toUpperCase();
+        const maxW=42, maxH=20;
+        const r=Math.min(maxW/props.width, maxH/props.height);
+        const w=props.width*r, h=props.height*r;
+        doc.addImage(logoData, type, M, y, w, h);
+        leftBottom = y + h + 4;
+      }catch(e){ leftBottom = y; }
     }
-    const x = (pageW - imgW) / 2;   // centre horizontally
-    const y = margin;
+    doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(...dark);
+    doc.text(($('fromName').value||'Your Company'), M, leftBottom+4);
+    leftBottom = leftBottom + 4;
 
-    const imgData = canvas.toDataURL('image/png');  // PNG = lossless, no pixel "fat"
-    pdf.addImage(imgData, 'PNG', x, y, imgW, imgH, undefined, 'NONE');
+    doc.setFont('helvetica','bold'); doc.setFontSize(26); doc.setTextColor(...brand);
+    doc.text('INVOICE', amountX, y+8, {align:'right'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(...muted);
+    if($('invNo').value) doc.text('#'+$('invNo').value, amountX, y+15, {align:'right'});
 
-    pdf.save(($('invNo').value || 'invoice') + '.pdf');
+    let hb = Math.max(leftBottom, y+18) + 4;
+    doc.setDrawColor(...brand); doc.setLineWidth(0.8); doc.line(M, hb, W-M, hb);
+    y = hb + 9;
+
+    // ---------- From / Bill To / Dates ----------
+    const colFromX=M, colToX=M+62;
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...muted);
+    doc.text('FROM', colFromX, y);
+    doc.text('BILL TO', colToX, y);
+
+    doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(...dark);
+    const fromLines = doc.splitTextToSize(($('fromDetails').value||'-'), 55);
+    const toLines   = doc.splitTextToSize(($('toDetails').value||'Client'), 55);
+    doc.text(fromLines, colFromX, y+5);
+    doc.text(toLines, colToX, y+5);
+
+    // Dates (right aligned)
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(...dark);
+    doc.text('Issue Date:', amountX-30, y, {align:'left'});
+    doc.text('Due Date:', amountX-30, y+6, {align:'left'});
+    doc.setFont('helvetica','normal'); doc.setTextColor(...muted);
+    doc.text(($('issueDate').value||'-'), amountX, y, {align:'right'});
+    doc.text(($('dueDate').value||'-'), amountX, y+6, {align:'right'});
+
+    const partiesH = Math.max(fromLines.length, toLines.length)*4.5 + 5;
+    y = y + Math.max(partiesH, 14) + 6;
+
+    // ---------- Items table header ----------
+    function tableHeader(){
+      doc.setFillColor(...brand); doc.rect(M, y, W-2*M, 8, 'F');
+      doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(9);
+      doc.text('DESCRIPTION', M+2, y+5.5);
+      doc.text('QTY', qtyX, y+5.5, {align:'right'});
+      doc.text('PRICE', priceX, y+5.5, {align:'right'});
+      doc.text('AMOUNT', amountX-2, y+5.5, {align:'right'});
+      y += 8;
+    }
+    tableHeader();
+
+    // ---------- Items rows ----------
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...dark);
+    let sub=0;
+    rows.forEach(tr=>{
+      const d=tr.querySelector('.d').value||'-';
+      const q=parseFloat(tr.querySelector('.q').value)||0;
+      const p=parseFloat(tr.querySelector('.p').value)||0;
+      const amt=q*p; sub+=amt;
+      const dl = doc.splitTextToSize(d, descMaxW);
+      const rowH = Math.max(7, dl.length*4.3 + 3);
+
+      if(y + rowH > H - 45){ doc.addPage(); y = M; tableHeader(); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...dark); }
+
+      doc.text(dl, M+2, y+5);
+      doc.text(String(q), qtyX, y+5, {align:'right'});
+      doc.text(fmtPDF(p), priceX, y+5, {align:'right'});
+      doc.text(fmtPDF(amt), amountX-2, y+5, {align:'right'});
+      y += rowH;
+      doc.setDrawColor(...lineCol); doc.setLineWidth(0.2); doc.line(M, y, W-M, y);
+    });
+
+    // ---------- Totals ----------
+    const discVal=parseFloat($('discount').value)||0;
+    const discAmt=$('discType').value==='%' ? sub*discVal/100 : discVal;
+    const taxable=Math.max(sub-discAmt,0);
+    const taxAmt=taxable*(parseFloat($('tax').value)||0)/100;
+    const total=taxable+taxAmt;
+
+    y += 7;
+    const labelX = W - M - 70;
+    function totRow(label,val,opts){
+      opts=opts||{};
+      doc.setFont('helvetica', opts.bold?'bold':'normal');
+      doc.setFontSize(opts.big?12.5:9.5);
+      doc.setTextColor(...(opts.brand?brand:dark));
+      doc.text(label, labelX, y);
+      doc.text(val, amountX, y, {align:'right'});
+      y += opts.big?9:6;
+    }
+    totRow('Subtotal', fmtPDF(sub));
+    totRow('Discount', '- '+fmtPDF(discAmt));
+    totRow('Tax', fmtPDF(taxAmt));
+    doc.setDrawColor(...brand); doc.setLineWidth(0.6); doc.line(labelX, y, W-M, y); y += 6;
+    totRow('TOTAL', fmtPDF(total), {bold:true, big:true, brand:true});
+
+    // ---------- Notes ----------
+    const notes=$('notes').value.trim();
+    if(notes){
+      y += 6;
+      doc.setDrawColor(...lineCol); doc.setLineWidth(0.2); doc.line(M, y, W-M, y); y += 6;
+      doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...muted);
+      doc.text('NOTES / PAYMENT TERMS', M, y); y += 5;
+      doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(...dark);
+      doc.text(doc.splitTextToSize(notes, W-2*M), M, y);
+    }
+
+    doc.save(($('invNo').value || 'invoice') + '.pdf');
     showMsg('Your PDF has been downloaded ✓',true);
-    btn.disabled=false; btn.textContent=old;
-  }).catch(function(err){
-    if(holder.parentNode) holder.parentNode.removeChild(holder);
+  }catch(err){
     console.error(err);
     showMsg('PDF error: '+err.message+' — Please use Print → Save as PDF instead.',false);
-    btn.disabled=false; btn.textContent=old;
-  });
+  }
+  btn.disabled=false; btn.textContent=old;
 }
 
 function loadSample(){

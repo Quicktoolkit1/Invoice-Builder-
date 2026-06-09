@@ -15,6 +15,10 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Prevent any element from overflowing the viewport on small screens */
+*, *::before, *::after { min-width: 0; }
+img, svg, video, table, iframe, ins { max-width: 100%; }
+
 html { scroll-behavior: smooth; }
 
 html, body { max-width: 100%; overflow-x: hidden; }
@@ -24,6 +28,8 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 a { color: var(--brand); text-decoration: none; }
