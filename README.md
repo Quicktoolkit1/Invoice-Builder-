@@ -37,7 +37,7 @@ A free, browser-based invoice generator for freelancers and small businesses. Fi
 1. Go to your repository on GitHub → **Settings** → **Pages**.
 2. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
 3. Choose the `main` branch and the `/ (root)` folder, then **Save**.
-4. Wait a minute, then visit: `https://mohdabdullah46345-ops.github.io/Invoice-Builder-/`
+4. Wait a minute, then visit: `https://quicktoolkit1.github.io/Invoice-Builder-/`
 
 ## 🔍 Google Search Console
 
