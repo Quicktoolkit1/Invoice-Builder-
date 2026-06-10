@@ -23,9 +23,12 @@
      Replace the content value below with the code Google gives you (Meta tag method). -->
 <meta name="google-site-verification" content="vw7XBPEqte4qpdyo3AJ491x3fcJIw0oCZfiyxnTsbXY" />
 
-<!-- Google AdSense:
-     After approval, replace ca-pub-XXXXXXXXXXXXXXXX with your real Publisher ID. -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+<!-- Google AdSense (disabled until approval):
+     When your AdSense account is approved, uncomment the line below and replace
+     ca-pub-XXXXXXXXXXXXXXXX with your real Publisher ID. Keeping it disabled
+     avoids a blank ad gap and console errors for visitors right now.
+     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+-->
 
 <!-- Structured data for rich results -->
 <script type="application/ld+json">
@@ -148,12 +151,17 @@
 
 <main class="container" id="generator">
 
-  <!-- Ad slot (top) -->
-  <div class="ad-slot">
-    <!-- AdSense: replace data-ad-client / data-ad-slot after approval -->
-    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="0000000000" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
+  <!--
+    Ad slot (top) - disabled until AdSense approval.
+    After approval, restore the AdSense markup here:
+      <div class="ad-slot">
+        <ins class="adsbygoogle" style="display:block"
+             data-ad-client="ca-pub-YOUR_ID" data-ad-slot="YOUR_SLOT"
+             data-ad-format="auto" data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>
+      </div>
+    and re-enable the loader script in the head. See README for steps.
+  -->
 
   <!-- ===== Tool ===== -->
   <div class="tool">
