@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Salary Slip Generator — Free Online Payslip Maker (PDF)</title>
+<meta name="description" content="Create a professional salary slip / payslip online for free. Add earnings, deductions, employee details and download a clean PDF. Every amount shown in ₹. No sign-up." />
+<meta name="keywords" content="salary slip generator, payslip maker, free payslip, salary slip pdf, salary slip format india, payslip generator online" />
+<meta name="author" content="Abdullah" />
+<link rel="canonical" href="https://quicktoolkit1.github.io/Invoice-Builder-/salary-slip.html" />
+
+<!-- Open Graph / social preview -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Salary Slip Generator — Free Online Payslip Maker" />
+<meta property="og:description" content="Create and download professional salary slip PDFs for free. No sign-up required." />
+<meta property="og:url" content="https://quicktoolkit1.github.io/Invoice-Builder-/salary-slip.html" />
+<meta name="twitter:card" content="summary" />
+
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="stylesheet" href="assets/style.css" />
+
+<!-- Structured data for rich results -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Salary Slip Generator",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+  "description": "Free online salary slip generator that creates professional PDF payslips in the browser."
+}
+</script>
+
+<style>
+  /* Tool-specific styles */
+  .tool { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .tool h2.section-title { font-size: 18px; margin-bottom: 14px; }
+  label.fld { display:block; font-size:12px; font-weight:600; color:var(--muted); margin:10px 0 4px; text-transform:uppercase; letter-spacing:.04em; }
+  .tool input, .tool textarea, .tool select { width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:8px; font-size:14px; font-family:inherit; }
+  .tool input:focus, .tool textarea:focus, .tool select:focus { outline:none; border-color:var(--brand); }
+  .frow { display:flex; gap:12px; } .frow>* { flex:1; }
+  .items { width:100%; border-collapse:collapse; margin-top:8px; table-layout:fixed; }
+  .items th:nth-child(1){ width:62%; } .items th:nth-child(2){ width:28%; } .items th:nth-child(3){ width:10%; }
+  .items input{ width:100%; }
+  .items th { font-size:11px; color:var(--muted); text-align:left; padding:6px; text-transform:uppercase; }
+  .items td { padding:4px; }
+  .items input { padding:7px 9px; }
+  .del { background:#fee2e2; color:#dc2626; border:none; border-radius:6px; width:30px; height:30px; cursor:pointer; font-weight:700; }
+  .grp-title { font-size:13px; font-weight:700; color:var(--text); margin:18px 0 2px; }
+  .tool-actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:22px; }
+
+  /* ---------- Payslip preview ---------- */
+  #payslip { background:#fff; border:1px solid var(--line); border-radius:14px; padding:36px; box-shadow:0 4px 20px rgba(0,0,0,.06); font-size:13.5px; color:#0f172a; }
+  .ps-head { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid var(--brand); padding-bottom:18px; margin-bottom:18px; gap:20px; }
+  .ps-head img { max-height:60px; max-width:170px; object-fit:contain; }
+  .ps-co .co-name { font-weight:800; font-size:18px; color:#0f172a; }
+  .ps-co .co-addr { font-size:12px; color:var(--muted); white-space:pre-line; line-height:1.5; margin-top:3px; }
+  .ps-title { text-align:right; }
+  .ps-title h2 { font-size:22px; color:var(--brand); letter-spacing:1px; }
+  .ps-title .period { color:var(--muted); margin-top:4px; font-size:13px; }
+
+  .emp-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 30px; margin-bottom:20px; }
+  .emp-grid .row { display:flex; justify-content:space-between; gap:10px; font-size:13px; border-bottom:1px dashed var(--line); padding:5px 0; }
+  .emp-grid .row .k { color:var(--muted); }
+  .emp-grid .row .v { font-weight:600; text-align:right; }
+
+  table.ps-table { width:100%; border-collapse:collapse; margin-bottom:18px; }
+  table.ps-table th { background:var(--brand); color:#fff; padding:9px 12px; font-size:12px; text-align:left; }
+  table.ps-table th.r, table.ps-table td.r { text-align:right; }
+  table.ps-table td { padding:8px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.ps-table tr:last-child td { border-bottom:none; }
+  table.ps-table .col-split { border-left:1px solid var(--line); }
+  table.ps-table tfoot td { font-weight:700; background:#f8fafc; border-top:2px solid var(--brand); border-bottom:none; }
+
+  .netpay { display:flex; justify-content:space-between; align-items:center; gap:16px; background:#eef2ff; border:1px solid #c7d2fe; border-radius:12px; padding:16px 20px; margin-bottom:8px; }
+  .netpay .np-label { font-size:13px; color:var(--brand-dark); font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+  .netpay .np-amt { font-size:24px; font-weight:800; color:var(--brand); }
+  .netpay-words { font-size:12.5px; color:var(--muted); margin-bottom:18px; font-style:italic; }
+
+  .ps-foot { margin-top:22px; border-top:1px solid var(--line); padding-top:14px; text-align:center; }
+  .ps-foot .gen-note { font-size:12.5px; color:var(--muted); }
+
+  .msg { margin-top:12px; font-size:13px; font-weight:600; min-height:18px; text-align:center; }
+  .msg.ok { color:#16a34a; } .msg.err { color:#dc2626; }
+
+  /* ---- Responsive: tablets ---- */
+  @media(max-width:900px){
+    .tool{ grid-template-columns:1fr; gap:18px; }
+    #payslip{ padding:24px; }
+  }
+  /* ---- Responsive: phones ---- */
+  @media(max-width:600px){
+    .frow{ flex-direction:column; gap:0; }
+    .items th{ padding:4px; font-size:10px; }
+    .items td{ padding:3px; }
+    .items input{ padding:6px 7px; font-size:13px; }
+    .del{ width:26px; height:26px; }
+    #payslip{ padding:16px; font-size:12.5px; }
+    .ps-head{ flex-direction:column; gap:10px; align-items:flex-start; }
+    .ps-title{ text-align:left; }
+    .ps-title h2{ font-size:20px; }
+    .emp-grid{ grid-template-columns:1fr; gap:0 0; }
+    .ps-table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    table.ps-table{ min-width:420px; }
+    .netpay{ flex-direction:column; align-items:flex-start; gap:6px; }
+    .netpay .np-amt{ font-size:21px; }
+    .tool-actions .btn{ flex:1 1 100%; text-align:center; }
+  }
+  @media print {
+    @page { margin: 12mm; }
+    body { background:#fff !important; }
+    body * { visibility: hidden !important; }
+    #payslip, #payslip * { visibility: visible !important; }
+    #payslip {
+      position: absolute; left: 0; top: 0; width: 100%;
+      box-shadow: none !important; border:none !important; border-radius: 0 !important; padding: 0 !important;
+      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+    }
+    #payslip table.ps-table th, #payslip tfoot td, #payslip .netpay {
+      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+  <nav class="nav">
+    <a class="brand" href="index.html"><span class="logo">🧾</span> Invoice Builder</a>
+    <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+    <div class="nav-links">
+      <a href="index.html">Invoice</a>
+      <a href="salary-slip.html">Salary Slip</a>
+      <a href="guides.html">Guides</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </nav>
+</header>
+
+<!-- ===== Hero ===== -->
+<section class="hero container">
+  <h1>Free Online <span>Salary Slip Generator</span></h1>
+  <p>Create a professional payslip in minutes — add company and employee details, earnings and deductions, then download a clean PDF. Every amount is shown in ₹. No sign-up, 100% free.</p>
+  <a class="btn" href="#generator">Create a Salary Slip ↓</a>
+</section>
+
+<main class="container" id="generator">
+
+  <!-- ===== Tool ===== -->
+  <div class="tool">
+    <!-- FORM -->
+    <div class="card">
+      <h2 class="section-title">📄 Payslip Details</h2>
+
+      <label class="fld">Company Logo</label>
+      <input type="file" id="logo" accept="image/*" />
+
+      <label class="fld">Company Name</label>
+      <input id="coName" placeholder="Acme Pvt Ltd" />
+
+      <label class="fld">Company Address</label>
+      <textarea id="coAddr" rows="2" placeholder="221B Market Road, Mumbai 400001"></textarea>
+
+      <div class="frow">
+        <div><label class="fld">Pay Period</label><input type="month" id="period" /></div>
+        <div><label class="fld">Pay Date</label><input type="date" id="payDate" /></div>
+      </div>
+
+      <div class="grp-title">Employee</div>
+      <div class="frow">
+        <div><label class="fld">Employee Name</label><input id="empName" placeholder="John Carter" /></div>
+        <div><label class="fld">Employee ID</label><input id="empId" placeholder="EMP-001" /></div>
+      </div>
+      <div class="frow">
+        <div><label class="fld">Designation</label><input id="empDesig" placeholder="Software Engineer" /></div>
+        <div><label class="fld">Department</label><input id="empDept" placeholder="Engineering" /></div>
+      </div>
+      <div class="frow">
+        <div><label class="fld">Date of Joining</label><input type="date" id="empDoj" /></div>
+        <div><label class="fld">PAN (optional)</label><input id="empPan" placeholder="ABCDE1234F" /></div>
+      </div>
+      <div class="frow">
+        <div><label class="fld">Bank A/C (optional)</label><input id="empBank" placeholder="XXXXXX1234" /></div>
+        <div><label class="fld">UAN / PF No (optional)</label><input id="empUan" placeholder="100200300400" /></div>
+      </div>
+      <div class="frow">
+        <div><label class="fld">Paid Days</label><input type="number" id="paidDays" min="0" step="0.5" value="30" /></div>
+        <div><label class="fld">LOP Days</label><input type="number" id="lopDays" min="0" step="0.5" value="0" /></div>
+      </div>
+
+      <div class="grp-title">Earnings</div>
+      <table class="items">
+        <thead><tr><th>Component</th><th>Amount (₹)</th><th></th></tr></thead>
+        <tbody id="earnRows"></tbody>
+      </table>
+      <button class="btn sm sec" type="button" id="addEarnBtn">+ Add Earning</button>
+
+      <div class="grp-title">Deductions</div>
+      <table class="items">
+        <thead><tr><th>Component</th><th>Amount (₹)</th><th></th></tr></thead>
+        <tbody id="dedRows"></tbody>
+      </table>
+      <button class="btn sm sec" type="button" id="addDedBtn">+ Add Deduction</button>
+
+      <label class="fld" style="margin-top:18px">Notes (optional)</label>
+      <textarea id="notes" rows="2" placeholder="e.g. Salary credited to bank account."></textarea>
+    </div>
+
+    <!-- PREVIEW -->
+    <div>
+      <div id="payslip">
+        <div class="ps-head">
+          <div class="ps-co">
+            <img id="pLogo" alt="Company logo" style="display:none" />
+            <div id="pCoName" class="co-name">Your Company</div>
+            <div id="pCoAddr" class="co-addr"></div>
+          </div>
+          <div class="ps-title">
+            <h2>PAYSLIP</h2>
+            <div class="period" id="pPeriod"></div>
+          </div>
+        </div>
+
+        <div class="emp-grid" id="pEmp"></div>
+
+        <div class="ps-table-wrap">
+        <table class="ps-table">
+          <thead>
+            <tr>
+              <th>Earnings</th><th class="r">Amount</th>
+              <th class="col-split">Deductions</th><th class="r">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="pBreakup"></tbody>
+          <tfoot>
+            <tr>
+              <td>Gross Earnings</td><td class="r" id="pGross"></td>
+              <td class="col-split">Total Deductions</td><td class="r" id="pDed"></td>
+            </tr>
+          </tfoot>
+        </table>
+        </div>
+
+        <div class="netpay">
+          <span class="np-label">Net Pay</span>
+          <span class="np-amt" id="pNet"></span>
+        </div>
+        <div class="netpay-words" id="pNetWords"></div>
+
+        <div class="ps-foot">
+          <div id="pNotes" style="font-size:12.5px;color:var(--muted);margin-bottom:8px"></div>
+          <div class="gen-note">This is a system generated payslip and does not require a signature.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Actions ===== -->
+  <div class="tool-actions" id="actions">
+    <button class="btn" id="pdfBtn" type="button">⬇ Download PDF</button>
+    <button class="btn sec" type="button" id="printBtn">🖨 Print</button>
+    <button class="btn sec" type="button" id="sampleBtn">📋 Load Sample</button>
+    <button class="btn sec" type="button" id="resetBtn">↺ Reset</button>
+  </div>
+  <div id="msg" class="msg" role="status" aria-live="polite"></div>
+
+  <!-- ===== Features / SEO content ===== -->
+  <section style="margin-top:50px">
+    <h2 style="font-size:24px;text-align:center;margin-bottom:8px">Why use this Salary Slip Generator?</h2>
+    <p style="text-align:center;color:var(--muted);max-width:640px;margin:0 auto">A fast, private and completely free way to create professional payslips for your team or yourself.</p>
+    <div class="features">
+      <div class="feature"><div class="ico">⚡</div><h3>Instant PDF</h3><p>Fill the form and download a print-ready PDF payslip in seconds.</p></div>
+      <div class="feature"><div class="ico">🔒</div><h3>100% Private</h3><p>Everything runs in your browser. Your data never leaves your device.</p></div>
+      <div class="feature"><div class="ico">₹</div><h3>Rupee Formatting</h3><p>Every amount is consistently shown in ₹ with Indian number formatting.</p></div>
+      <div class="feature"><div class="ico">🧮</div><h3>Auto Totals</h3><p>Gross earnings, total deductions and net pay update automatically.</p></div>
+      <div class="feature"><div class="ico">🔤</div><h3>Amount in Words</h3><p>Net pay is automatically written out in words for clarity.</p></div>
+      <div class="feature"><div class="ico">💾</div><h3>Auto-Save</h3><p>Your draft is saved locally so you can come back any time.</p></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <h4>Invoice Builder</h4>
+      <p style="font-size:14px;color:#94a3b8">A free, browser-based toolkit to help freelancers and small businesses create invoices and salary slips quickly and professionally.</p>
+    </div>
+    <div>
+      <h4>Pages</h4>
+      <a href="index.html">Invoice Generator</a>
+      <a href="salary-slip.html">Salary Slip</a>
+      <a href="guides.html">Guides</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="disclaimer.html">Disclaimer</a>
+    </div>
+  </div>
+  <div class="footer-bottom">© <span data-year>2026</span> Invoice Builder by Abdullah. All rights reserved.</div>
+</footer>
+
+<!-- jsPDF + html2canvas for PDF export that preserves the ₹ symbol exactly as shown -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="assets/site.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+let logoData = "";
+
+function showMsg(text, ok){
+  const m = $('msg');
+  m.textContent = text;
+  m.className = 'msg ' + (ok ? 'ok' : 'err');
+  if(text) setTimeout(()=>{ if(m.textContent===text){m.textContent='';m.className='msg';} }, 6000);
+}
+
+// Rupee formatting: ₹ prefixes EVERY monetary value (e.g. "₹ 45,000.00")
+const fmt = n => '₹ ' + Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+const safe = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+// ---- Indian number to words ----
+function numToWords(num){
+  num = Math.round(Number(num)||0);
+  if(num===0) return 'Zero';
+  const a=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+  const b=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+  const two = n => n<20 ? a[n] : (b[Math.floor(n/10)] + (n%10 ? ' '+a[n%10] : ''));
+  const three = n => { let s=''; if(n>99){ s+=a[Math.floor(n/100)]+' Hundred'; n%=100; if(n) s+=' '; } if(n) s+=two(n); return s; };
+  let str='';
+  const crore=Math.floor(num/10000000); num%=10000000;
+  const lakh=Math.floor(num/100000); num%=100000;
+  const thousand=Math.floor(num/1000); num%=1000;
+  if(crore) str += three(crore)+' Crore ';
+  if(lakh) str += two(lakh)+' Lakh ';
+  if(thousand) str += two(thousand)+' Thousand ';
+  if(num) str += three(num);
+  return str.trim();
+}
+
+// ---- Editable rows ----
+function addRow(tbody, comp='', amt=''){
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input class="c" placeholder="Component"></td>
+    <td><input class="a" type="number" min="0" step="0.01" placeholder="0.00"></td>
+    <td><button class="del" type="button" aria-label="Remove">×</button></td>`;
+  tr.querySelector('.c').value = comp;
+  tr.querySelector('.a').value = amt;
+  tr.querySelector('.del').addEventListener('click',()=>{tr.remove();render();});
+  tr.querySelectorAll('input').forEach(i=>i.addEventListener('input',render));
+  tbody.appendChild(tr);
+  render();
+}
+const addEarn = (c,a)=>addRow($('earnRows'),c,a);
+const addDed  = (c,a)=>addRow($('dedRows'),c,a);
+
+function collect(tbody){
+  return [...tbody.querySelectorAll('tr')].map(tr=>({
+    c: tr.querySelector('.c').value,
+    a: parseFloat(tr.querySelector('.a').value)||0
+  }));
+}
+
+function empRow(k,v){ return v ? `<div class="row"><span class="k">${safe(k)}</span><span class="v">${safe(v)}</span></div>` : ''; }
+
+function render(){
+  // Company
+  $('pCoName').textContent = $('coName').value || 'Your Company';
+  $('pCoAddr').textContent = $('coAddr').value;
+  if(logoData){ $('pLogo').src=logoData; $('pLogo').style.display='block'; }
+  else $('pLogo').style.display='none';
+
+  // Period (YYYY-MM -> "Month YYYY")
+  let periodTxt = '';
+  if($('period').value){
+    const [y,m] = $('period').value.split('-');
+    const d = new Date(y, (parseInt(m,10)-1), 1);
+    periodTxt = d.toLocaleDateString('en-IN',{month:'long', year:'numeric'});
+  }
+  $('pPeriod').textContent = periodTxt ? 'For '+periodTxt : '';
+
+  // Employee details grid
+  const paid = $('paidDays').value, lop = $('lopDays').value;
+  let emp = '';
+  emp += empRow('Employee Name', $('empName').value);
+  emp += empRow('Employee ID', $('empId').value);
+  emp += empRow('Designation', $('empDesig').value);
+  emp += empRow('Department', $('empDept').value);
+  emp += empRow('Date of Joining', $('empDoj').value);
+  emp += empRow('Pay Date', $('payDate').value);
+  emp += empRow('PAN', $('empPan').value);
+  emp += empRow('Bank A/C', $('empBank').value);
+  emp += empRow('UAN / PF No', $('empUan').value);
+  if(paid!=='' ) emp += empRow('Paid Days', paid);
+  if(lop!=='' && parseFloat(lop)>0) emp += empRow('LOP Days', lop);
+  $('pEmp').innerHTML = emp || '<div class="row"><span class="k">Employee</span><span class="v">—</span></div>';
+
+  // Earnings / Deductions
+  const earns = collect($('earnRows'));
+  const deds  = collect($('dedRows'));
+  const gross = earns.reduce((s,x)=>s+x.a,0);
+  const totalDed = deds.reduce((s,x)=>s+x.a,0);
+  const net = gross - totalDed;
+
+  const rowsCount = Math.max(earns.length, deds.length, 1);
+  let body = '';
+  for(let i=0;i<rowsCount;i++){
+    const e = earns[i], d = deds[i];
+    body += '<tr>'
+      + `<td>${e ? safe(e.c||'-') : ''}</td>`
+      + `<td class="r">${e ? fmt(e.a) : ''}</td>`
+      + `<td class="col-split">${d ? safe(d.c||'-') : ''}</td>`
+      + `<td class="r">${d ? fmt(d.a) : ''}</td>`
+      + '</tr>';
+  }
+  $('pBreakup').innerHTML = body;
+  $('pGross').textContent = fmt(gross);
+  $('pDed').textContent   = fmt(totalDed);
+  $('pNet').textContent   = fmt(net);
+
+  const netWords = net < 0
+    ? 'Amount payable is negative — please review deductions.'
+    : 'Rupees ' + numToWords(net) + ' Only';
+  $('pNetWords').textContent = netWords;
+
+  $('pNotes').textContent = $('notes').value;
+
+  save();
+}
+
+function save(){
+  try{
+    const data = {
+      coName:$('coName').value, coAddr:$('coAddr').value, period:$('period').value, payDate:$('payDate').value,
+      empName:$('empName').value, empId:$('empId').value, empDesig:$('empDesig').value, empDept:$('empDept').value,
+      empDoj:$('empDoj').value, empPan:$('empPan').value, empBank:$('empBank').value, empUan:$('empUan').value,
+      paidDays:$('paidDays').value, lopDays:$('lopDays').value, notes:$('notes').value, logoData,
+      earns:collect($('earnRows')), deds:collect($('dedRows'))
+    };
+    localStorage.setItem('salarySlipData', JSON.stringify(data));
+  }catch(e){ /* ignore */ }
+}
+
+function load(){
+  let d=null;
+  try{ d=JSON.parse(localStorage.getItem('salarySlipData')); }catch(e){}
+  if(!d){ seed(); return; }
+  ['coName','coAddr','period','payDate','empName','empId','empDesig','empDept','empDoj','empPan','empBank','empUan','paidDays','lopDays','notes']
+    .forEach(k=>{ if(d[k]!==undefined && $(k)) $(k).value=d[k]; });
+  logoData = d.logoData || "";
+  (d.earns && d.earns.length ? d.earns : [{c:'Basic',a:''}]).forEach(x=>addEarn(x.c,x.a));
+  (d.deds && d.deds.length ? d.deds : [{c:'',a:''}]).forEach(x=>addDed(x.c,x.a));
+  render();
+}
+
+function seed(){
+  $('period').value = new Date().toISOString().slice(0,7);
+  $('payDate').value = new Date().toISOString().slice(0,10);
+  ['Basic','House Rent Allowance (HRA)','Conveyance Allowance','Medical Allowance','Special Allowance']
+    .forEach(c=>addEarn(c,''));
+  ['Provident Fund (PF)','Professional Tax','Income Tax (TDS)'].forEach(c=>addDed(c,''));
+  render();
+}
+
+function resetAll(){
+  if(!confirm('Clear everything and start a new salary slip?')) return;
+  localStorage.removeItem('salarySlipData'); location.reload();
+}
+
+$('logo').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f)return;
+  if(f.size > 2*1024*1024){ showMsg('Logo is too large. Please use an image under 2 MB.',false); e.target.value=''; return; }
+  const r=new FileReader();
+  r.onload=()=>{ logoData=r.result; render(); };
+  r.onerror=()=>showMsg('Could not load the logo image. Please try another file.',false);
+  r.readAsDataURL(f);
+});
+
+// ---- PDF export via html2canvas (keeps ₹ exactly as rendered on screen) ----
+async function exportPDF(){
+  if(!window.jspdf || !window.jspdf.jsPDF || !window.html2canvas){
+    showMsg('PDF library failed to load. Please check your connection, or use Print → Save as PDF.',false);
+    return;
+  }
+  const node = $('payslip');
+  const btn=$('pdfBtn'); btn.disabled=true; const old=btn.textContent; btn.textContent='Generating…';
+  try{
+    const canvas = await html2canvas(node, { scale:2, backgroundColor:'#ffffff', useCORS:true, logging:false });
+    const img = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p','mm','a4');
+    const pw = pdf.internal.pageSize.getWidth();
+    const ph = pdf.internal.pageSize.getHeight();
+    const margin = 10;
+    const imgW = pw - margin*2;
+    const imgH = canvas.height * imgW / canvas.width;
+    const usable = ph - margin*2;
+
+    if(imgH <= usable){
+      pdf.addImage(img,'PNG',margin,margin,imgW,imgH);
+    } else {
+      // Multi-page: slice the tall image across pages
+      let heightLeft = imgH;
+      let position = margin;
+      pdf.addImage(img,'PNG',margin,position,imgW,imgH);
+      heightLeft -= usable;
+      while(heightLeft > 0){
+        position = margin - (imgH - heightLeft);
+        pdf.addPage();
+        pdf.addImage(img,'PNG',margin,position,imgW,imgH);
+        heightLeft -= usable;
+      }
+    }
+    const name = ($('empName').value || 'salary-slip').trim().replace(/\s+/g,'-').toLowerCase();
+    pdf.save(name + '.pdf');
+    showMsg('Your payslip PDF has been downloaded ✓',true);
+  }catch(err){
+    console.error(err);
+    showMsg('PDF error: '+err.message+' — Please use Print → Save as PDF instead.',false);
+  }
+  btn.disabled=false; btn.textContent=old;
+}
+
+function loadSample(){
+  const hasData = [...$('earnRows').querySelectorAll('.a')].some(i=>i.value.trim()) || $('empName').value.trim();
+  if(hasData && !confirm('Load sample data? This will replace your current payslip.')) return;
+
+  $('coName').value  = 'Acme Studio Pvt Ltd';
+  $('coAddr').value  = '221B Market Road, Mumbai 400001';
+  $('period').value  = new Date().toISOString().slice(0,7);
+  $('payDate').value = new Date().toISOString().slice(0,10);
+  $('empName').value = 'John Carter';
+  $('empId').value   = 'EMP-007';
+  $('empDesig').value= 'Software Engineer';
+  $('empDept').value = 'Engineering';
+  $('empPan').value  = 'ABCDE1234F';
+  $('empBank').value = 'XXXXXX1234';
+  $('empUan').value  = '100200300400';
+  $('paidDays').value= 30;
+  $('lopDays').value = 0;
+  $('notes').value   = 'Salary credited to the registered bank account.';
+
+  $('earnRows').innerHTML = '';
+  addEarn('Basic', 45000);
+  addEarn('House Rent Allowance (HRA)', 18000);
+  addEarn('Conveyance Allowance', 1600);
+  addEarn('Medical Allowance', 1250);
+  addEarn('Special Allowance', 8150);
+
+  $('dedRows').innerHTML = '';
+  addDed('Provident Fund (PF)', 5400);
+  addDed('Professional Tax', 200);
+  addDed('Income Tax (TDS)', 3500);
+
+  render();
+  showMsg('Sample salary slip loaded ✓',true);
+}
+
+// Wire up
+$('addEarnBtn').addEventListener('click',()=>addEarn());
+$('addDedBtn').addEventListener('click',()=>addDed());
+$('pdfBtn').addEventListener('click',exportPDF);
+$('printBtn').addEventListener('click',()=>window.print());
+$('sampleBtn').addEventListener('click',loadSample);
+$('resetBtn').addEventListener('click',resetAll);
+
+['coName','coAddr','period','payDate','empName','empId','empDesig','empDept','empDoj','empPan','empBank','empUan','paidDays','lopDays','notes']
+  .forEach(id=>$(id).addEventListener('input',render));
+
+load();
+</script>
+</body>
+</html>
