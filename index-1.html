@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Invoice Builder — Free Online Invoice Generator with PDF Download</title>
+<meta name="description" content="Create professional invoices online for free. Add your logo, items, tax, discount and download a clean PDF instantly. No sign-up, works in your browser." />
+<meta name="keywords" content="invoice generator, free invoice maker, online invoice, create invoice pdf, billing tool, gst invoice" />
+<meta name="author" content="Abdullah" />
+<link rel="canonical" href="https://quicktoolkit1.github.io/Invoice-Builder-/" />
+<!-- Open Graph / social preview -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Invoice Builder — Free Online Invoice Generator" />
+<meta property="og:description" content="Create and download professional invoice PDFs for free. No sign-up required." />
+<meta property="og:url" content="https://quicktoolkit1.github.io/Invoice-Builder-/" />
+<meta name="twitter:card" content="summary" />
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="stylesheet" href="assets/style.css" />
+<!-- Google Search Console verification:
+Replace the content value below with the code Google gives you (Meta tag method). -->
+<meta name="google-site-verification" content="vw7XBPEqte4qpdyo3AJ491x3fcJIw0oCZfiyxnTsbXY" />
+<!-- Google AdSense (disabled until approval):
+When your AdSense account is approved, uncomment the line below and replace
+ca-pub-XXXXXXXXXXXXXXXX with your real Publisher ID. Keeping it disabled
+avoids a blank ad gap and console errors for visitors right now.
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+-->
+<!-- Structured data for rich results -->
+<script type="application/ld+json">
+{
+"@context": "https://schema.org",
+"@type": "WebApplication",
+"name": "Invoice Builder",
+"applicationCategory": "BusinessApplication",
+"operatingSystem": "Any",
+"offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+"description": "Free online invoice generator that creates professional PDF invoices in the browser."
+}
+</script>
+<style>
+/* Tool-specific styles */
+.tool { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.tool h2.section-title { font-size: 18px; margin-bottom: 14px; }
+label.fld { display:block; font-size:12px; font-weight:600; color:var(--muted); margin:10px 0 4px; text-transform:uppercase; letter-spacing:.04em; }
+.tool input, .tool textarea, .tool select { width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:8px; font-size:14px; font-family:inherit; }
+.tool input:focus, .tool textarea:focus, .tool select:focus { outline:none; border-color:var(--brand); }
+.frow { display:flex; gap:12px; } .frow>* { flex:1; }
+.items { width:100%; border-collapse:collapse; margin-top:8px; table-layout:fixed; }
+.items th:nth-child(1){ width:46%; } .items th:nth-child(2){ width:18%; }
+.items th:nth-child(3){ width:24%; } .items th:nth-child(4){ width:12%; }
+.items input{ width:100%; }
+.items th { font-size:11px; color:var(--muted); text-align:left; padding:6px; text-transform:uppercase; }
+.items td { padding:4px; }
+.items input { padding:7px 9px; }
+.del { background:#fee2e2; color:#dc2626; border:none; border-radius:6px; width:30px; height:30px; cursor:pointer; font-weight:700; }
+.tool-actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:22px; }
+#invoice { background:#fff; border-radius:14px; padding:40px; box-shadow:0 4px 20px rgba(0,0,0,.06); font-size:14px; color:#0f172a; }
+.inv-head { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid var(--brand); padding-bottom:20px; margin-bottom:24px; }
+.inv-head img { max-height:64px; max-width:180px; object-fit:contain; }
+.inv-title { text-align:right; }
+.inv-title h2 { font-size:32px; color:var(--brand); letter-spacing:2px; }
+.inv-title .num { color:var(--muted); margin-top:4px; }
+.parties { display:flex; justify-content:space-between; gap:30px; margin-bottom:24px; }
+.parties h4 { font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+.parties .name { font-weight:700; font-size:16px; }
+.meta { font-size:13px; color:var(--muted); white-space:pre-line; line-height:1.5; }
+/* Issue/Due date block: fixed min-width + own line per field so the
+   label and the year never collide, even on narrow screens or with
+   longer localized date strings. */
+.dates { text-align:right; font-size:13px; line-height:1.9; min-width:150px; }
+.dates .drow { display:flex; justify-content:flex-end; align-items:baseline; gap:6px; white-space:nowrap; }
+.dates .drow b { color:var(--text); font-weight:600; }
+.dates .drow span { font-variant-numeric:tabular-nums; letter-spacing:.2px; }
+table.preview { width:100%; border-collapse:collapse; margin-bottom:20px; }
+table.preview th { background:var(--brand); color:#fff; padding:10px; font-size:12px; text-align:left; }
+table.preview th.r, table.preview td.r { text-align:right; }
+table.preview td { padding:10px; border-bottom:1px solid var(--line); }
+.totals { margin-left:auto; width:280px; font-size:14px; }
+.totals .line { display:flex; justify-content:space-between; padding:6px 0; gap:10px; }
+.totals .line span:first-child { color:var(--muted); }
+.totals .grand { border-top:2px solid var(--brand); margin-top:6px; padding-top:10px; font-size:18px; font-weight:700; color:var(--brand); }
+.notes { margin-top:26px; font-size:13px; color:var(--muted); border-top:1px solid var(--line); padding-top:14px; white-space:pre-line; }
+.msg { margin-top:12px; font-size:13px; font-weight:600; min-height:18px; }
+.msg.ok { color:#16a34a; } .msg.err { color:#dc2626; }
+
+/* ---- Responsive: tablets ---- */
+@media(max-width:900px){
+.tool{ grid-template-columns:1fr; gap:18px; }
+#invoice{ padding:24px; }
+}
+/* ---- Responsive: phones ---- */
+@media(max-width:600px){
+.frow{ flex-direction:column; gap:0; }
+/* Editable items table stays fluid (no horizontal scroll on the form) */
+.items th{ padding:4px; font-size:10px; }
+.items td{ padding:3px; }
+.items input{ padding:6px 7px; font-size:13px; }
+.del{ width:26px; height:26px; }
+/* Invoice preview adapts to small screens */
+#invoice{ padding:16px; font-size:13px; }
+.inv-head{ flex-direction:column; gap:10px; align-items:flex-start; }
+.inv-title{ text-align:left; }
+.inv-title h2{ font-size:24px; letter-spacing:1px; }
+.parties{ flex-direction:column; gap:14px; }
+.dates{ text-align:left; min-width:0; }
+.dates .drow{ justify-content:flex-start; }
+.totals{ width:100%; }
+/* Only the read-only preview table scrolls if it is too wide */
+.preview-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+table.preview{ min-width:380px; }
+table.preview th, table.preview td{ padding:8px 6px; font-size:12px; }
+.tool-actions{ gap:8px; }
+.tool-actions .btn{ flex:1 1 100%; text-align:center; }
+}
+@media print {
+@page { margin: 12mm; }
+body { background:#fff !important; }
+/* Hide everything, then reveal only the invoice */
+body * { visibility: hidden !important; }
+#invoice, #invoice * { visibility: visible !important; }
+#invoice {
+position: absolute; left: 0; top: 0; width: 100%;
+box-shadow: none !important; border-radius: 0 !important; padding: 0 !important;
+-webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+}
+#invoice table.preview th, #invoice .totals .grand {
+-webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+}
+}
+</style>
+</head>
+<body>
+<!-- ===== Header ===== -->
+<header class="site-header">
+<nav class="nav">
+<a class="brand" href="index.html"><span class="logo">🧾</span> Invoice Builder</a>
+<button class="nav-toggle" aria-label="Toggle menu">☰</button>
+<div class="nav-links">
+<a href="index.html">Invoice</a>
+<a href="salary-slip.html">Salary Slip</a>
+<a href="guides.html">Guides</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+</div>
+</nav>
+</header>
+
+<!-- ===== Hero ===== -->
+<section class="hero container">
+<h1>Free Online <span>Invoice Generator</span></h1>
+<p>Create a professional invoice in minutes — add your logo, items, taxes and discounts, then download a clean PDF. No sign-up, no software, 100% free.</p>
+<a class="btn" href="#generator">Create an Invoice ↓</a>
+</section>
+
+<main class="container" id="generator">
+<!--
+Ad slot (top) - disabled until AdSense approval.
+After approval, restore the AdSense markup here:
+<div class="ad-slot">
+<ins class="adsbygoogle" style="display:block"
+data-ad-client="ca-pub-YOUR_ID" data-ad-slot="YOUR_SLOT"
+data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>
+</div>
+and re-enable the loader script in the head. See README for steps.
+-->
+
+<!-- ===== Tool ===== -->
+<div class="tool">
+<!-- FORM -->
+<div class="card">
+<h2 class="section-title">🧾 Invoice Details</h2>
+<label class="fld">Company Logo</label>
+<input type="file" id="logo" accept="image/*" />
+<div class="frow">
+<div>
+<label class="fld">Your Company</label>
+<input id="fromName" placeholder="Acme Pvt Ltd" />
+</div>
+<div>
+<label class="fld">Currency</label>
+<select id="currency">
+<option value="₹">INR (₹)</option>
+<option value="$">USD ($)</option>
+<option value="€">EUR (€)</option>
+<option value="£">GBP (£)</option>
+<option value="¥">JPY (¥)</option>
+<option value="A$">AUD (A$)</option>
+</select>
+</div>
+</div>
+<label class="fld">Your Details (address, email, phone, GSTIN)</label>
+<textarea id="fromDetails" rows="3" placeholder="123 Street, City&#10;billing@acme.com&#10;GSTIN: 22AAAAA0000A1Z5"></textarea>
+<label class="fld">Bill To (client name + details)</label>
+<textarea id="toDetails" rows="3" placeholder="Client Name&#10;Client address&#10;client@email.com"></textarea>
+<div class="frow">
+<div><label class="fld">Invoice #</label><input id="invNo" /></div>
+<div><label class="fld">Issue Date</label><input type="date" id="issueDate" /></div>
+<div><label class="fld">Due Date</label><input type="date" id="dueDate" /></div>
+</div>
+<label class="fld">Items</label>
+<div class="items-wrap">
+<table class="items">
+<thead><tr><th style="width:50%">Description</th><th>Qty</th><th>Price</th><th></th></tr></thead>
+<tbody id="itemRows"></tbody>
+</table>
+</div>
+<button class="btn sm sec" type="button" id="addItemBtn">+ Add Item</button>
+<div class="frow">
+<div><label class="fld">Tax (%)</label><input type="number" id="tax" value="0" min="0" /></div>
+<div>
+<label class="fld">GST Tax Type</label>
+<select id="gstType">
+<option value="none">Not Applicable / Other Tax</option>
+<option value="intra">Intra-State (CGST + SGST)</option>
+<option value="inter">Inter-State (IGST)</option>
+</select>
+</div>
+</div>
+<div class="frow">
+<div><label class="fld">Discount</label><input type="number" id="discount" value="0" min="0" /></div>
+<div>
+<label class="fld">Discount Type</label>
+<select id="discType"><option value="%">Percent (%)</option><option value="flat">Flat</option></select>
+</div>
+</div>
+<label class="fld">Notes / Payment Terms</label>
+<textarea id="notes" rows="2" placeholder="Payment due within 15 days. Thank you!"></textarea>
+</div>
+
+<!-- PREVIEW -->
+<div>
+<div id="invoice">
+<div class="inv-head">
+<div><img id="pLogo" alt="Company logo" style="display:none" /><div id="pFromName" class="name"></div></div>
+<div class="inv-title"><h2>INVOICE</h2><div class="num" id="pInvNo"></div></div>
+</div>
+<div class="parties">
+<div><h4>From</h4><div id="pFrom" class="meta"></div></div>
+<div><h4>Bill To</h4><div id="pTo" class="meta"></div></div>
+<div class="dates" id="pDates"></div>
+</div>
+<div class="preview-wrap">
+<table class="preview">
+<thead><tr><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th></tr></thead>
+<tbody id="pItems"></tbody>
+</table>
+</div>
+<div class="totals">
+<div class="line"><span>Subtotal</span><span id="pSub"></span></div>
+<div class="line"><span>Discount</span><span id="pDisc"></span></div>
+<div id="pTaxLines"></div>
+<div class="line grand"><span>Total</span><span id="pTotal"></span></div>
+</div>
+<div class="notes" id="pNotes"></div>
+</div>
+</div>
+</div>
+
+<!-- ===== Actions (below the live preview) ===== -->
+<div class="tool-actions" id="actions">
+<button class="btn" id="pdfBtn" type="button">⬇ Download PDF</button>
+<button class="btn sec" type="button" id="printBtn">🖨 Print</button>
+<button class="btn sec" type="button" id="sampleBtn">📋 Load Sample</button>
+<button class="btn sec" type="button" id="resetBtn">↺ Reset</button>
+</div>
+<div id="msg" class="msg" role="status" aria-live="polite"></div>
+
+<!-- ===== Features / SEO content ===== -->
+<section style="margin-top:50px">
+<h2 style="font-size:24px;text-align:center;margin-bottom:8px">Why use Invoice Builder?</h2>
+<p style="text-align:center;color:var(--muted);max-width:640px;margin:0 auto">A fast, private and completely free way to bill your clients — built for freelancers, small businesses and startups.</p>
+<div class="features">
+<div class="feature"><div class="ico">⚡</div><h3>Instant PDF</h3><p>Fill the form and download a print-ready PDF invoice in seconds.</p></div>
+<div class="feature"><div class="ico">🔒</div><h3>100% Private</h3><p>Everything runs in your browser. Your data never leaves your device.</p></div>
+<div class="feature"><div class="ico">🎨</div><h3>Your Branding</h3><p>Add your company logo and details for a professional look.</p></div>
+<div class="feature"><div class="ico">🌍</div><h3>Multi-Currency</h3><p>Bill in INR, USD, EUR, GBP, JPY or AUD with automatic formatting.</p></div>
+<div class="feature"><div class="ico">🧮</div><h3>GST-Ready Tax</h3><p>Auto-split tax into CGST + SGST or IGST for compliant Indian invoices.</p></div>
+<div class="feature"><div class="ico">💾</div><h3>Auto-Save</h3><p>Your draft is saved locally so you can come back any time.</p></div>
+</div>
+</section>
+
+<section class="card" style="margin-top:30px">
+<h2 style="font-size:22px;margin-bottom:12px">How to create an invoice</h2>
+<ol style="margin-left:20px;color:var(--text)">
+<li>Enter your company name, contact details and (optionally) upload your logo.</li>
+<li>Add the client's billing details under <strong>Bill To</strong>.</li>
+<li>Set an invoice number, issue date and due date.</li>
+<li>Add each product or service as a line item with quantity and price.</li>
+<li>Apply tax and/or a discount if needed — for Indian GST invoices, choose Intra-State or Inter-State so CGST/SGST or IGST is shown separately.</li>
+<li>Click <strong>Download PDF</strong> to save your invoice, or print it directly.</li>
+</ol>
+<p style="margin-top:14px">New to invoicing? Read our <a href="guides.html">free invoicing guides</a> to learn about invoice numbers, payment terms and getting paid faster.</p>
+</section>
+</main>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+<div class="footer-grid">
+<div>
+<h4>Invoice Builder</h4>
+<p style="font-size:14px;color:#94a3b8">A free, browser-based invoice generator built to help freelancers and small businesses bill clients quickly and professionally.</p>
+</div>
+<div>
+<h4>Pages</h4>
+<a href="index.html">Invoice</a>
+<a href="salary-slip.html">Salary Slip</a>
+<a href="guides.html">Guides</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+</div>
+<div>
+<h4>Legal</h4>
+<a href="privacy-policy.html">Privacy Policy</a>
+<a href="terms.html">Terms of Service</a>
+<a href="disclaimer.html">Disclaimer</a>
+</div>
+</div>
+<div class="footer-bottom">© <span data-year>2026</span> Invoice Builder by Abdullah. All rights reserved.</div>
+</footer>
+
+<!-- jsPDF for crisp vector PDF export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="assets/site.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+let logoData = "";
+
+function showMsg(text, ok){
+const m = $('msg');
+m.textContent = text;
+m.className = 'msg ' + (ok ? 'ok' : 'err');
+if(text) setTimeout(()=>{ if(m.textContent===text){m.textContent='';m.className='msg';} }, 6000);
+}
+
+const cur = () => $('currency').value;
+const fmt = n => cur() + Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+// Human-readable date formatter used everywhere a date is displayed
+// (HTML preview + PDF) so long/locale date strings never collide with
+// their label — e.g. "01 Jul 2026" instead of a raw "2026-07-01".
+function fmtDate(d){
+if(!d) return '-';
+const dt = new Date(d + 'T00:00:00');
+if(isNaN(dt.getTime())) return d;
+return dt.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function addItem(desc='',qty=1,price=0){
+const tr = document.createElement('tr');
+tr.innerHTML = `
+<td><input class="d" placeholder="Item / service"></td>
+<td><input class="q" type="number" min="0" step="1"></td>
+<td><input class="p" type="number" min="0" step="0.01"></td>
+<td><button class="del" type="button" aria-label="Remove item">×</button></td>`;
+// Set values safely (avoids breaking markup if user typed quotes)
+tr.querySelector('.d').value = desc;
+tr.querySelector('.q').value = qty;
+tr.querySelector('.p').value = price;
+tr.querySelector('.del').addEventListener('click',()=>{tr.remove();render();});
+tr.querySelectorAll('input').forEach(i=>i.addEventListener('input',render));
+$('itemRows').appendChild(tr);
+render();
+}
+
+function render(){
+$('pFromName').textContent = $('fromName').value || 'Your Company';
+$('pFrom').textContent = $('fromDetails').value;
+$('pTo').textContent = $('toDetails').value || 'Client';
+$('pInvNo').textContent = $('invNo').value ? '#'+$('invNo').value : '';
+// Each date gets its own row (label + value) so a 4-digit year can
+// never render on top of the label text, on any screen width.
+$('pDates').innerHTML =
+`<div class="drow"><b>Issue:</b><span>${fmtDate($('issueDate').value)}</span></div>` +
+`<div class="drow"><b>Due:</b><span>${fmtDate($('dueDate').value)}</span></div>`;
+if(logoData){$('pLogo').src=logoData;$('pLogo').style.display='block';}
+else $('pLogo').style.display='none';
+
+let sub=0, body='';
+$('itemRows').querySelectorAll('tr').forEach(tr=>{
+const d=tr.querySelector('.d').value;
+const q=parseFloat(tr.querySelector('.q').value)||0;
+const p=parseFloat(tr.querySelector('.p').value)||0;
+const amt=q*p; sub+=amt;
+const safe = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+body+=`<tr><td>${safe(d||'-')}</td><td class="r">${q}</td><td class="r">${fmt(p)}</td><td class="r">${fmt(amt)}</td></tr>`;
+});
+$('pItems').innerHTML = body || '<tr><td colspan="4" style="color:#94a3b8">No items added</td></tr>';
+
+const discVal = parseFloat($('discount').value)||0;
+const discAmt = $('discType').value==='%' ? sub*discVal/100 : discVal;
+const taxable = Math.max(sub-discAmt,0);
+const taxPct = parseFloat($('tax').value)||0;
+// Total tax amount is unchanged — only how it is broken up for display differs.
+const taxAmt = taxable*taxPct/100;
+const total = taxable+taxAmt;
+
+$('pSub').textContent=fmt(sub);
+$('pDisc').textContent='- '+fmt(discAmt);
+
+// GST-compliant tax breakup: CGST+SGST (intra-state) or IGST (inter-state).
+const gstType = $('gstType').value;
+let taxLinesHTML;
+if(gstType === 'intra' && taxAmt > 0){
+const halfPct = taxPct/2, halfAmt = taxAmt/2;
+taxLinesHTML =
+`<div class="line"><span>CGST @ ${halfPct}%</span><span>${fmt(halfAmt)}</span></div>` +
+`<div class="line"><span>SGST @ ${halfPct}%</span><span>${fmt(halfAmt)}</span></div>`;
+} else if(gstType === 'inter' && taxAmt > 0){
+taxLinesHTML = `<div class="line"><span>IGST @ ${taxPct}%</span><span>${fmt(taxAmt)}</span></div>`;
+} else {
+taxLinesHTML = `<div class="line"><span>Tax${taxPct?` @ ${taxPct}%`:''}</span><span>${fmt(taxAmt)}</span></div>`;
+}
+$('pTaxLines').innerHTML = taxLinesHTML;
+
+$('pTotal').textContent=fmt(total);
+$('pNotes').textContent=$('notes').value;
+save();
+}
+
+function save(){
+try{
+const items=[...$('itemRows').querySelectorAll('tr')].map(tr=>({
+d:tr.querySelector('.d').value,q:tr.querySelector('.q').value,p:tr.querySelector('.p').value}));
+const data={fromName:$('fromName').value,fromDetails:$('fromDetails').value,toDetails:$('toDetails').value,
+invNo:$('invNo').value,issueDate:$('issueDate').value,dueDate:$('dueDate').value,currency:$('currency').value,
+tax:$('tax').value,gstType:$('gstType').value,discount:$('discount').value,discType:$('discType').value,notes:$('notes').value,logoData,items};
+localStorage.setItem('invoiceData',JSON.stringify(data));
+}catch(e){ /* storage may be unavailable; ignore */ }
+}
+
+function load(){
+let d=null;
+try{ d=JSON.parse(localStorage.getItem('invoiceData')); }catch(e){}
+if(!d){seed();return;}
+['fromName','fromDetails','toDetails','invNo','issueDate','dueDate','currency','tax','gstType','discount','discType','notes']
+.forEach(k=>{if(d[k]!==undefined)$(k).value=d[k];});
+logoData=d.logoData||"";
+(d.items&&d.items.length?d.items:[{d:'',q:1,p:0}]).forEach(i=>addItem(i.d,i.q,i.p));
+render();
+}
+
+function seed(){
+$('invNo').value='INV-'+new Date().getFullYear()+'-001';
+$('issueDate').value=new Date().toISOString().slice(0,10);
+addItem('',1,0);
+}
+
+function resetAll(){
+if(!confirm('Clear everything and start a new invoice?'))return;
+localStorage.removeItem('invoiceData');location.reload();
+}
+
+$('logo').addEventListener('change',e=>{
+const f=e.target.files[0]; if(!f)return;
+if(f.size > 2*1024*1024){ showMsg('Logo is too large. Please use an image under 2 MB.',false); e.target.value=''; return; }
+const r=new FileReader();
+r.onload=()=>{logoData=r.result;render();};
+r.onerror=()=>showMsg('Could not load the logo image. Please try another file.',false);
+r.readAsDataURL(f);
+});
+
+// Currency symbol that renders safely in the standard PDF font.
+// The Rupee sign (₹) is not in the standard PDF font set, so we use "Rs.".
+function pdfCur(){ const c=$('currency').value; return c==='₹' ? 'Rs.' : c; }
+function fmtPDF(n){ return pdfCur()+' '+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+// Vector PDF: text and lines are drawn directly into the PDF, so the output is
+// crisp at any zoom level and never pixelates (unlike an image-based export).
+function exportPDF(){
+if(!window.jspdf || !window.jspdf.jsPDF){
+showMsg('PDF library failed to load. Please check your internet connection, or use Print → Save as PDF.',false);
+return;
+}
+const rows = [...$('itemRows').querySelectorAll('tr')];
+if(rows.length===0){ showMsg('Please add at least one item before downloading.',false); return; }
+const btn=$('pdfBtn'); btn.disabled=true; const old=btn.textContent; btn.textContent='Generating…';
+try{
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF({orientation:'p', unit:'mm', format:'a4'});
+const W=210, H=297, M=15;
+const brand=[79,70,229], muted=[100,116,139], lineCol=[226,232,240], dark=[15,23,42];
+const amountX = W - M; // right edge for right-aligned numbers
+const priceX = W - M - 32;
+const qtyX = W - M - 62;
+const descMaxW = qtyX - M - 8;
+
+let y = M;
+
+// ---------- Header ----------
+let leftBottom = y;
+if(logoData){
+try{
+const props = doc.getImageProperties(logoData);
+const type = (logoData.substring(11, logoData.indexOf(';'))||'png').toUpperCase();
+const maxW=42, maxH=20;
+const r=Math.min(maxW/props.width, maxH/props.height);
+const w=props.width*r, h=props.height*r;
+doc.addImage(logoData, type, M, y, w, h);
+leftBottom = y + h + 4;
+}catch(e){ leftBottom = y; }
+}
+doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(...dark);
+doc.text(($('fromName').value||'Your Company'), M, leftBottom+4);
+leftBottom = leftBottom + 4;
+
+doc.setFont('helvetica','bold'); doc.setFontSize(26); doc.setTextColor(...brand);
+doc.text('INVOICE', amountX, y+8, {align:'right'});
+doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(...muted);
+if($('invNo').value) doc.text('#'+$('invNo').value, amountX, y+15, {align:'right'});
+
+let hb = Math.max(leftBottom, y+18) + 4;
+doc.setDrawColor(...brand); doc.setLineWidth(0.8); doc.line(M, hb, W-M, hb);
+y = hb + 9;
+
+// ---------- From / Bill To / Dates ----------
+const colFromX=M, colToX=M+62;
+doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...muted);
+doc.text('FROM', colFromX, y);
+doc.text('BILL TO', colToX, y);
+doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(...dark);
+const fromLines = doc.splitTextToSize(($('fromDetails').value||'-'), 55);
+const toLines = doc.splitTextToSize(($('toDetails').value||'Client'), 55);
+doc.text(fromLines, colFromX, y+5);
+doc.text(toLines, colToX, y+5);
+
+// Dates block — label and value are placed with a fixed, generous
+// column reserved for the label (dateLabelX) so the value (including
+// a 4-digit year) never overlaps the label text, regardless of the
+// date format or font metrics. Values also use fmtDate() (e.g.
+// "01 Jul 2026") instead of the raw ISO string for a shorter, safer width.
+const dateLabelX = amountX - 52;
+function drawDateRow(label, value, yPos){
+doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(...dark);
+doc.text(label, dateLabelX, yPos, {align:'left'});
+doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...muted);
+doc.text(value, amountX, yPos, {align:'right'});
+}
+drawDateRow('Issue Date:', fmtDate($('issueDate').value), y);
+drawDateRow('Due Date:', fmtDate($('dueDate').value), y+7);
+
+const partiesH = Math.max(fromLines.length, toLines.length)*4.5 + 5;
+y = y + Math.max(partiesH, 16) + 6;
+
+// ---------- Items table header ----------
+function tableHeader(){
+doc.setFillColor(...brand); doc.rect(M, y, W-2*M, 8, 'F');
+doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(9);
+doc.text('DESCRIPTION', M+2, y+5.5);
+doc.text('QTY', qtyX, y+5.5, {align:'right'});
+doc.text('PRICE', priceX, y+5.5, {align:'right'});
+doc.text('AMOUNT', amountX-2, y+5.5, {align:'right'});
+y += 8;
+}
+tableHeader();
+
+// ---------- Items rows ----------
+doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...dark);
+let sub=0;
+rows.forEach(tr=>{
+const d=tr.querySelector('.d').value||'-';
+const q=parseFloat(tr.querySelector('.q').value)||0;
+const p=parseFloat(tr.querySelector('.p').value)||0;
+const amt=q*p; sub+=amt;
+const dl = doc.splitTextToSize(d, descMaxW);
+const rowH = Math.max(7, dl.length*4.3 + 3);
+if(y + rowH > H - 45){ doc.addPage(); y = M; tableHeader(); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...dark); }
+doc.text(dl, M+2, y+5);
+doc.text(String(q), qtyX, y+5, {align:'right'});
+doc.text(fmtPDF(p), priceX, y+5, {align:'right'});
+doc.text(fmtPDF(amt), amountX-2, y+5, {align:'right'});
+y += rowH;
+doc.setDrawColor(...lineCol); doc.setLineWidth(0.2); doc.line(M, y, W-M, y);
+});
+
+// ---------- Totals ----------
+const discVal=parseFloat($('discount').value)||0;
+const discAmt=$('discType').value==='%' ? sub*discVal/100 : discVal;
+const taxable=Math.max(sub-discAmt,0);
+const taxPct=parseFloat($('tax').value)||0;
+const taxAmt=taxable*taxPct/100; // total tax — unchanged, only its breakup differs below
+const total=taxable+taxAmt;
+const gstType=$('gstType').value;
+
+y += 7;
+const labelX = W - M - 70;
+function totRow(label,val,opts){
+opts=opts||{};
+doc.setFont('helvetica', opts.bold?'bold':'normal');
+doc.setFontSize(opts.big?12.5:9.5);
+doc.setTextColor(...(opts.brand?brand:dark));
+doc.text(label, labelX, y);
+doc.text(val, amountX, y, {align:'right'});
+y += opts.big?9:6;
+}
+totRow('Subtotal', fmtPDF(sub));
+totRow('Discount', '- '+fmtPDF(discAmt));
+
+// GST-compliant tax breakup in the PDF, mirroring the on-screen preview.
+if(gstType==='intra' && taxAmt>0){
+const halfPct = taxPct/2;
+totRow(`CGST @ ${halfPct}%`, fmtPDF(taxAmt/2));
+totRow(`SGST @ ${halfPct}%`, fmtPDF(taxAmt/2));
+} else if(gstType==='inter' && taxAmt>0){
+totRow(`IGST @ ${taxPct}%`, fmtPDF(taxAmt));
+} else {
+totRow('Tax', fmtPDF(taxAmt));
+}
+
+doc.setDrawColor(...brand); doc.setLineWidth(0.6); doc.line(labelX, y, W-M, y); y += 6;
+totRow('TOTAL', fmtPDF(total), {bold:true, big:true, brand:true});
+
+// ---------- Notes ----------
+const notes=$('notes').value.trim();
+if(notes){
+y += 6;
+doc.setDrawColor(...lineCol); doc.setLineWidth(0.2); doc.line(M, y, W-M, y); y += 6;
+doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...muted);
+doc.text('NOTES / PAYMENT TERMS', M, y); y += 5;
+doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(...dark);
+doc.text(doc.splitTextToSize(notes, W-2*M), M, y);
+}
+
+doc.save(($('invNo').value || 'invoice') + '.pdf');
+showMsg('Your PDF has been downloaded ✓',true);
+}catch(err){
+console.error(err);
+showMsg('PDF error: '+err.message+' — Please use Print → Save as PDF instead.',false);
+}
+btn.disabled=false; btn.textContent=old;
+}
+
+function loadSample(){
+const hasData = [...$('itemRows').querySelectorAll('.d')].some(i=>i.value.trim()) ||
+$('fromName').value.trim() || $('toDetails').value.trim();
+if(hasData && !confirm('Load sample data? This will replace your current invoice.')) return;
+$('fromName').value = 'Acme Studio';
+$('fromDetails').value= 'Acme Studio Pvt Ltd\n221B Market Road, Mumbai 400001\nbilling@acmestudio.com\nGSTIN: 27AAAAA0000A1Z5';
+$('toDetails').value = 'John Carter\nCarter & Co.\n12 Hill Street, Pune 411001\njohn@carterco.com';
+$('invNo').value = 'INV-' + new Date().getFullYear() + '-007';
+$('issueDate').value = new Date().toISOString().slice(0,10);
+const due = new Date(); due.setDate(due.getDate()+15);
+$('dueDate').value = due.toISOString().slice(0,10);
+$('currency').value = '₹';
+$('tax').value = 18;
+$('gstType').value = 'intra';
+$('discount').value = 5;
+$('discType').value = '%';
+$('notes').value = 'Payment due within 15 days via bank transfer. Thank you for your business!';
+$('itemRows').innerHTML = '';
+addItem('Website design (5 pages)', 1, 25000);
+addItem('Logo & brand identity', 1, 8000);
+addItem('Hosting setup & configuration', 2, 1500);
+render();
+showMsg('Sample invoice loaded ✓',true);
+}
+
+// Wire up buttons (no inline handlers)
+$('addItemBtn').addEventListener('click',()=>addItem());
+$('pdfBtn').addEventListener('click',exportPDF);
+$('printBtn').addEventListener('click',()=>window.print());
+$('sampleBtn').addEventListener('click',loadSample);
+$('resetBtn').addEventListener('click',resetAll);
+['fromName','fromDetails','toDetails','invNo','issueDate','dueDate','currency','tax','gstType','discount','discType','notes']
+.forEach(id=>$(id).addEventListener('input',render));
+load();
+</script>
+</body>
+</html>
